@@ -13,7 +13,7 @@ public class AppDbContext : DbContext
     }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer("DefaultConnection");
+        optionsBuilder.UseSqlServer(@"DefaultString");
     }
     public DbSet<Person> Persons { get; set; }
     public DbSet<Skill> Skills { get; set; }
