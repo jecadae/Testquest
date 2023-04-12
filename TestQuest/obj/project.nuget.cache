@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "dcIkkzADbOxhCkR7HQsLDhEbMdp9vQpWMeNoi77+zYXjNYUTS0Z/Chx20Xe0FSyw4oPpfM8dZJ65wC91eYTzWg==",
+  "dgSpecHash": "LsdqlIHXTlmegSGrJaov4jIv2wSFA8w1np0X/QDtyCBuyegblS5gtjNdfq8yLAdDjjchGShlHbP2LJVAtelvSw==",
   "success": true,
-  "projectFilePath": "D:\\education\\TestQuest\\TestQuest\\TestQuest.csproj",
+  "projectFilePath": "C:\\Users\\User\\Documents\\GitHub\\Testquest\\TestQuest\\TestQuest.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\User\\.nuget\\packages\\azure.core\\1.24.0\\azure.core.1.24.0.nupkg.sha512",
     "C:\\Users\\User\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",

@@ -10,88 +10,110 @@ namespace TestQuest.Controllers;
 [Route("api/v1/")]
 public class PersonController: ControllerBase
 {
-    private readonly AppDbContext _context;
-
-    public PersonController(AppDbContext context)
-    {
-        _context = context;
-    }
     
+    /// <summary>
+    /// Репозиторий пользователей
+    /// </summary>
+    private readonly PersonRepository _personRepository;
+
+    public PersonController(PersonRepository personRepository)
+    {
+        _personRepository = personRepository;
+    }
+    /// <summary>
+    /// Получить список всех пользователей
+    /// </summary>
+    /// <returns>Массив пользователей</returns>
     [HttpGet]
     [Route("persons")]
-    public Person[] GetPersons()
+    public async Task<Person[]> GetPersonsListAsync()
     {
-        return _context.Persons.Include(x =>x.Skills).ToArray();
+        return await _personRepository.GetPersonsAsync();
     }
-    
+    /// <summary>
+    /// Получить пользователей
+    /// </summary>
+    /// <param name="id">ID пользователя</param>
+    /// <returns>Сущность пользователя, иначе NotFound </returns>
     [HttpGet]
     [Route("person/{id}")]
-    public async Task<IActionResult> SearchPerson(long id)
+    public async Task<IActionResult> SearchPersonAsync(long id)
     {
-        var result = _context.Persons.Include(x=> x.Skills).SingleOrDefaultAsync(x=> x.Id == id);
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+        
+        Person result = await _personRepository.GetPersonAsync(id);
+        
         if (result == null)
         {
             return StatusCode(404,"Cущность не найдена в системе.");
         }
-        return Ok(result.Result);
+        return Ok(result);
     }
-    
+    /// <summary>
+    /// Создание пользователя
+    /// </summary>
+    /// <param name="request">Сущность пользователя</param>
+    /// <returns> Response 200 если получилось создать</returns>
     [HttpPost]
     [Route("person")]
-    public async Task<IActionResult> AddPerson(Person request)
+    public async Task<IActionResult> AddPersonAsync(Person request)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest();
         }
-
         request.Id = null;
-        var result = _context.Persons.Add(request);
-        await _context.SaveChangesAsync();
+        _personRepository.CreatePersonAsync(request);
         return Ok();
     }
-
+    /// <summary>
+    /// Изменение данных существующего пользователя
+    /// </summary>
+    /// <param name="id">ID пользователя</param>
+    /// <param name="person">Новые данные</param>
+    /// <returns>Response 200 если пользователь был изменен, 404 если он не был найден</returns>
     [HttpPut]
     [Route("person/{id}")]
-    public async Task<IActionResult> PutPerson([Required]long id,[Required]Person request)
+    public async Task<IActionResult> PutPersonAsync(long id,Person request)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest();
         }
-        var result = _context.Persons.Include(x=> x.Skills).SingleOrDefaultAsync(x=> x.Id == id);
+
+        var result =await _personRepository.UpdatePersonAsync(id, request);
         
-        if (result == null)
+        if (result == false)
         {
             return StatusCode(404,"Cущность не найдена в системе.");
         }
-
-        result.Result.Skills = request.Skills;
-        result.Result.Name = request.Name;
-        result.Result.DisplayName = request.DisplayName;
-        _context.SaveChangesAsync();
+        
         return Ok();
     }
-
+    /// <summary>
+    /// Удаление пользователя
+    /// </summary>
+    /// <param name="id">ID удаляемого пользователя</param>
+    /// <returns>>Code 200  если пользователь был удален, 404 если он не был найден</returns>
     [HttpDelete]
     [Route("person/{id}")]
-    public async Task<IActionResult> RemovePerson([Required] long id)
+    public async Task<IActionResult> DeletePersonAsync([Required] long id)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest();
         }
 
-        var result = _context.Persons.Include(x=> x.Skills).SingleOrDefaultAsync(x=> x.Id == id);;
-        Console.WriteLine($"{result.Result.DisplayName}");
-        
-        if (result == null)
+        bool result = await _personRepository.RemovePersonAsync(id);
+
+        if (result == false)
         {
             return StatusCode(404, "Cущность не найдена в системе.");
         }
 
-        _context.Remove(result.Result);
-        _context.SaveChangesAsync();
         return Ok();
     }
 
